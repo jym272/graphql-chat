@@ -1,0 +1,34 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+directive @cacheControl(maxAge: Int, scope: CacheControlScope) on OBJECT | FIELD_DEFINITION | INTERFACE
+
+type Message {
+    from: String
+    id: ID!
+    text: String
+}
+
+type Mutation {
+    addMessage(input: MessageInput!): Message
+}
+
+type Query {
+    messages: [Message]
+}
+
+enum CacheControlScope {
+    PRIVATE
+    PUBLIC
+}
+
+"The `Upload` scalar type represents a file upload."
+scalar Upload
+
+input MessageInput {
+    text: String
+}
