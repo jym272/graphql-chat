@@ -1,12 +1,13 @@
 import {
-  ApolloClient, ApolloLink, HttpLink, InMemoryCache
-} from 'apollo-boost';
+  ApolloClient, ApolloLink, HttpLink, InMemoryCache, split
+} from '@apollo/client';
 import { getAccessToken } from '../auth';
-import {getMainDefinition} from 'apollo-utilities';
-import {WebSocketLink} from "apollo-link-ws";
+import {getMainDefinition} from '@apollo/client/utilities';
+import {GraphQLWsLink} from "@apollo/client/link/subscriptions";
+import {createClient} from "graphql-ws";
 
 const httpUrl = 'http://localhost:9000/graphql';
-const wsUrl = 'ws://localhost:9000/subscriptions';
+const wsUrl = 'ws://localhost:9000/graphql';
 
 const httpLink = ApolloLink.from([
   new ApolloLink((operation, forward) => {
@@ -19,20 +20,32 @@ const httpLink = ApolloLink.from([
   new HttpLink({uri: httpUrl})
 ]);
 
-const wsLink = new WebSocketLink({uri: wsUrl, options: {reconnect: true, lazy: true}});
+const wsLink = new GraphQLWsLink(createClient({
+    url: wsUrl,
+    reconnect: true,
+    lazy: true,
+    connectionParams: () => {
+        const token = getAccessToken();
+        return token ? {accessToken: `${token}`} : {};
+    }
+}));
 
-const isSubscription = ({query}) => {
-    const definition = getMainDefinition(query);
-    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
-}
+const splitLink = split(
+    ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'subscription'
+        );
+    },
+    wsLink,
+    httpLink,
+);
+
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: ApolloLink.split(
-    isSubscription,
-    wsLink,
-    httpLink
-    ),
+  link: splitLink,
   defaultOptions: {query: {fetchPolicy: 'no-cache'}}
 });
 

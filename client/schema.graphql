@@ -3,6 +3,7 @@
 schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
 }
 
 directive @cacheControl(maxAge: Int, scope: CacheControlScope) on OBJECT | FIELD_DEFINITION | INTERFACE
@@ -19,6 +20,10 @@ type Mutation {
 
 type Query {
     messages: [Message]
+}
+
+type Subscription {
+    messageAdded: Message
 }
 
 enum CacheControlScope {

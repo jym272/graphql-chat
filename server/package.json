@@ -6,13 +6,18 @@
     "start": "nodemon --ext js,graphql --ignore data/ server.js"
   },
   "dependencies": {
-    "apollo-server-express": "2.21.1",
+    "@graphql-tools/schema": "^8.5.0",
+    "apollo-server-core": "^3.9.0",
+    "apollo-server-express": "^3.9.0",
     "cors": "2.8.5",
     "express": "4.17.1",
     "express-jwt": "6.0.0",
     "graphql": "15.5.0",
+    "graphql-subscriptions": "^1.2.1",
+    "graphql-ws": "^5.9.1",
     "jsonwebtoken": "8.5.1",
-    "notarealdb": "0.2.2"
+    "notarealdb": "0.2.2",
+    "ws": "^8.8.0"
   },
   "devDependencies": {
     "nodemon": "2.0.7"
