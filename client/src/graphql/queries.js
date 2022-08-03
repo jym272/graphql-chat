@@ -38,15 +38,3 @@ export async function addMessage(text) {
   });
   return data.message;
 }
-
-export async function getMessages() {
-  const {data} = await client.query({query: messagesQuery});
-  return data.messages;
-}
-
-export function onMessageAdded(callback) {
-  const observable = client.subscribe({
-    query: messageAddedSubscription,
-  });
-  return observable.subscribe(({data})=>callback(data.messageAdded));
-}
